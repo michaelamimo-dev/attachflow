@@ -3,11 +3,7 @@
 -- Module 01 - Authentication
 -- ==========================================================
 
-CREATE DATABASE IF NOT EXISTS attachflow
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
-
-USE attachflow;
+USE attachflow_db;
 
 -- ==========================================================
 -- UNIVERSITIES

@@ -1,13 +1,13 @@
 -- ==========================================================
 -- AttachFlow Database
--- Module 07 - Settings
+-- Module 08 - Settings
 -- ==========================================================
 
-USE attachflow;
+USE attachflow_db;
 
 -- ==========================================================
 -- USER SETTINGS
--- Stores all user-configurable application preferences.
+-- Stores user-configurable application preferences.
 -- ==========================================================
 
 CREATE TABLE user_settings (

@@ -1,53 +1,54 @@
--- ============================================
+-- ==========================================================
 -- AttachFlow Database
--- Module: Indexes, Views & Seed Preparation
--- File: 09_indexes_views_seed.sql
--- ============================================
+-- Module 09 - Indexes, Views & Seed Preparation
+-- ==========================================================
 
 USE attachflow_db;
 
--- ============================================
--- INDEXES
--- ============================================
+-- ==========================================================
+-- ADDITIONAL INDEXES
+-- ==========================================================
 
-CREATE INDEX idx_users_email
-ON users(email);
+-- Daily log status filtering
+CREATE INDEX idx_dailylog_status
+    ON daily_logs (status);
 
-CREATE INDEX idx_daily_logs_date
-ON daily_logs(log_date);
+-- Project favourite filtering
+CREATE INDEX idx_project_favourite
+    ON projects (is_favourite);
 
-CREATE INDEX idx_daily_logs_user
-ON daily_logs(user_id);
+-- Milestone priority filtering
+CREATE INDEX idx_milestone_priority
+    ON milestones (priority);
 
-CREATE INDEX idx_projects_status
-ON projects(status);
+-- Skill learning status filtering
+CREATE INDEX idx_skill_learning_status
+    ON skills (learning_status);
 
-CREATE INDEX idx_projects_user
-ON projects(user_id);
-
-CREATE INDEX idx_milestones_due_date
-ON milestones(due_date);
-
-CREATE INDEX idx_skills_user
-ON skills(user_id);
-
-CREATE INDEX idx_notifications_user
-ON notifications(user_id);
-
--- ============================================
--- VIEWS
--- ============================================
+-- ==========================================================
+-- ACTIVE PROJECTS VIEW
+-- Returns non-deleted projects that are not completed.
+-- ==========================================================
 
 CREATE VIEW active_projects AS
 SELECT
     id,
-    user_id,
+    attachment_id,
     title,
     progress_percentage,
-    status
+    status,
+    priority,
+    health_status,
+    start_date,
+    target_end_date
 FROM projects
 WHERE deleted_at IS NULL
   AND status <> 'Completed';
+
+-- ==========================================================
+-- PENDING MILESTONES VIEW
+-- Returns non-deleted milestones that are not completed.
+-- ==========================================================
 
 CREATE VIEW pending_milestones AS
 SELECT
@@ -55,24 +56,35 @@ SELECT
     project_id,
     title,
     due_date,
-    status
+    status,
+    priority,
+    progress_percentage
 FROM milestones
 WHERE deleted_at IS NULL
   AND status <> 'Completed';
 
+-- ==========================================================
+-- RECENT DAILY LOGS VIEW
+-- Returns non-deleted daily logs ordered by work date.
+-- ==========================================================
+
 CREATE VIEW recent_daily_logs AS
 SELECT
     id,
-    user_id,
-    log_date,
+    attachment_id,
+    work_date,
+    start_time,
+    end_time,
     total_hours,
-    submitted
+    title,
+    status
 FROM daily_logs
-ORDER BY log_date DESC;
+WHERE deleted_at IS NULL
+ORDER BY work_date DESC, start_time DESC;
 
--- ============================================
+-- ==========================================================
 -- FUTURE SEED DATA
--- ============================================
+-- ==========================================================
 
 /*
 Seed data will be added after development of Version 1.

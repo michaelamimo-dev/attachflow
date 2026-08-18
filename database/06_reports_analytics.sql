@@ -3,7 +3,7 @@
 -- Module 06 - Reports & Analytics
 -- ==========================================================
 
-USE attachflow;
+USE attachflow_db;
 
 -- ==========================================================
 -- REPORT DEFINITIONS

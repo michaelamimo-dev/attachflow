@@ -1,81 +1,44 @@
--- ============================================
+-- ==========================================================
 -- AttachFlow Database
--- Module: Analytics
--- File: 07_analytics.sql
--- ============================================
+-- Module 07 - Analytics
+-- ==========================================================
 
 USE attachflow_db;
 
--- ============================================
--- USER ANALYTICS SNAPSHOTS
--- ============================================
-
-CREATE TABLE user_analytics (
-    id CHAR(36) PRIMARY KEY,
-    user_id CHAR(36) NOT NULL,
-
-    total_hours DECIMAL(6,2) DEFAULT 0,
-    total_daily_logs INT DEFAULT 0,
-    total_projects INT DEFAULT 0,
-    completed_projects INT DEFAULT 0,
-    active_projects INT DEFAULT 0,
-    completed_milestones INT DEFAULT 0,
-    pending_milestones INT DEFAULT 0,
-    total_skills INT DEFAULT 0,
-
-    productivity_score DECIMAL(5,2),
-    consistency_score DECIMAL(5,2),
-
-    generated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_user_analytics_user
-        FOREIGN KEY (user_id)
-        REFERENCES users(id)
-        ON DELETE CASCADE
-);
-
--- ============================================
--- WEEKLY ANALYTICS
--- ============================================
+-- ==========================================================
+-- WEEKLY STATISTICS
+-- Stores aggregated weekly attachment activity.
+-- ==========================================================
 
 CREATE TABLE weekly_statistics (
-    id CHAR(36) PRIMARY KEY,
-    user_id CHAR(36) NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    attachment_id INT NOT NULL,
 
     week_start DATE NOT NULL,
     week_end DATE NOT NULL,
 
     hours_logged DECIMAL(6,2) DEFAULT 0,
+
     logs_created INT DEFAULT 0,
+
     milestones_completed INT DEFAULT 0,
+
     projects_updated INT DEFAULT 0,
 
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_weekly_statistics_user
-        FOREIGN KEY (user_id)
-        REFERENCES users(id)
-        ON DELETE CASCADE
-);
+    CONSTRAINT fk_weekly_statistics_attachment
+        FOREIGN KEY (attachment_id)
+        REFERENCES attachments(id)
+        ON DELETE CASCADE,
 
--- ============================================
--- USER ACHIEVEMENTS
--- ============================================
+    UNIQUE KEY uk_weekly_statistics
+        (attachment_id, week_start),
 
-CREATE TABLE user_achievements (
-    id CHAR(36) PRIMARY KEY,
-    user_id CHAR(36) NOT NULL,
+    INDEX idx_weekly_statistics_attachment
+        (attachment_id),
 
-    achievement_name VARCHAR(120) NOT NULL,
-    description TEXT,
-
-    icon VARCHAR(100),
-    badge_color VARCHAR(30),
-
-    earned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_user_achievements_user
-        FOREIGN KEY (user_id)
-        REFERENCES users(id)
-        ON DELETE CASCADE
-);
+    INDEX idx_weekly_statistics_week
+        (week_start)
+) ENGINE=InnoDB;
